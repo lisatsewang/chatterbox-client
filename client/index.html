@@ -10,13 +10,14 @@
     <script src="bower_components/underscore/underscore.js"></script>
     <!-- your scripts -->
     <script src="env/config.js"></script>
-    <script src="scripts/app.js"></script>
+    <script src="scripts/helpers.js"></script>
+    <!-- <script src="scripts/app.js"></script>-->
   </head>
   <body>
     <div id="main">
       <h1>chatterbox</h1>
       <select name="room" id="roomName">
-        <option value="default">Default</option>
+        <option value="default">All Rooms</option>
       </select>
       <form class="messages" method="post">
         username: <input type="text" name="username" value="Type your username here">
@@ -27,5 +28,30 @@
       <button>ADD</button>
       <div class="messageBoard"></div>
     </div>
+    <script>
+    $(document).ready(function(){
+      // ajax
+      ajaxGet(displayAllMessage);
+
+      //change chat room
+      $('select').change(function() {
+        var roomName = $("#roomName").val();
+        var url = "roomIndex.html?roomname=" + roomName;
+        window.location = url;
+      });
+
+      // post and get submited message
+      $('button').click(function() {submitMessage($("input[name=room]").val(),displayAllMessage)});
+
+      // befriend by clicking username
+      $('body').on('click', '.userDiv', function() {
+        if (!window.friends.hasOwnProperty($(this).text())) {
+          window.friends[$(this).text()] = $(this).text();
+          $(this).addClass("friends");
+          displayBoldedFriendMessage();
+        }
+      });
+    });
+    </script>
   </body>
 </html>

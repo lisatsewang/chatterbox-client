@@ -10,6 +10,7 @@
     <script src="bower_components/underscore/underscore.js"></script>
     <!-- your scripts -->
     <script src="env/config.js"></script>
+    <script src="scripts/helpers.js"></script>
     <!-- <script src="scripts/app.js"></script> -->
   </head>
   <body>
@@ -27,110 +28,21 @@
     </div>
     <script>
     $(document).ready(function(){
-      var getUrlParameter = function(sParam) {
-        var sPageURL = window.location.search.substring(1);
-        var sURLVariables = sPageURL.split('&');
-        for (var i = 0; i < sURLVariables.length; i ++) {
-          var sParameterName = sURLVariables[i].split('=');
-          if (sParameterName[0] === sParam ) {
-            return sParameterName[1];
-          }
-        }
-      };
-
       // ajax
-      $.ajax({
-          url: "https://api.parse.com/1/classes/chatterbox",
-          type: "GET",
-          success: function(data) {
-            var selectedRoom = getUrlParameter("roomname");
-            
-            for (var i = 0; i < data.results.length; i++) {
-              var room = data.results[i].roomname;
-              if (selectedRoom === room) {
-                var username = document.createTextNode(data.results[i].username);
-                console.log(username);
-                var text = document.createTextNode(data.results[i].text);
-                var userDiv = $("<div class='userDiv'></div>");
-                var textDiv = $("<div class='textDiv'></div>");
-                var messageDiv = $("<div class='messageDiv'></div>");
-                userDiv.append(username);
-                textDiv.append(text);
-                messageDiv.append(userDiv);
-                messageDiv.append(textDiv);
-                $(".messageBoard").prepend(messageDiv);
-              }
-            }
-            $('#roomName').append($('<option>', {
-              value: selectedRoom,
-              text: selectedRoom
-            }));
+     ajaxGet(displayRoomMessage);
 
-          },
-          error: function(data) {console.log("get failed!"); }
+     // var room = $("#roomName").val();
+     // console.log(room);
+    $('button').click(function() { submitMessage($("#roomName").val(), displayRoomMessage);});
 
-        });
-  $('button').click(function() {
-    var username = $("input[name=username]").val();
-    var text = $("input[name=message]").val();
-    var roomName = $("#roomName").val();
-    console.log(roomName);
-
-    var message = {
-      username: username,
-      text: text,
-      roomname: roomName
-    }
-    
-    //Post message to server
-    $.ajax({
-      // This is the url you should use to communicate with the parse API server.
-      url: 'https://api.parse.com/1/classes/chatterbox',
-      type: 'POST',
-      data: JSON.stringify(message),
-      contentType: 'application/json',
-      success: function (data) {
-        console.log('chatterbox: Message sent');
-      },
-      error: function (data) {
-        // See: https://developer.mozilla.org/en-US/docs/Web/API/console.error
-        console.error('chatterbox: Failed to send message');
-      }
-    });
-    
-    // refresh message board
-    $.ajax({
-          url: "https://api.parse.com/1/classes/chatterbox",
-          type: "GET",
-          success: function(data) {
-            var selectedRoom = getUrlParameter("roomname");
-            $(".messageBoard").empty();
-            for (var i = 0; i < data.results.length; i++) {
-              var room = data.results[i].roomname;
-              if (selectedRoom === room) {
-                var username = document.createTextNode(data.results[i].username);
-                console.log(username);
-                var text = document.createTextNode(data.results[i].text);
-                var userDiv = $("<div class='userDiv'></div>");
-                var textDiv = $("<div class='textDiv'></div>");
-                var messageDiv = $("<div class='messageDiv'></div>");
-                userDiv.append(username);
-                textDiv.append(text);
-                messageDiv.append(userDiv);
-                messageDiv.append(textDiv);
-                $(".messageBoard").prepend(messageDiv);
-              }
-            }
-            $('#roomName').append($('<option>', {
-              value: selectedRoom,
-              text: selectedRoom
-            }));
-
-          },
-          error: function(data) {console.log("get failed!"); }
+    // befriend by clicking username
+      $('body').on('click', '.userDiv', function() {
+        if (!window.friends.hasOwnProperty($(this).text())) {
+          window.friends[$(this).text()] = $(this).text();
+          $(this).addClass("friends");
+          displayBoldedFriendMessage();
+        }
       });
-
-  })
     });
     </script>
   </body>

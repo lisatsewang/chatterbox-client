@@ -86,3 +86,7 @@ form input[type=text] {
 .messageDiv {
     margin: 20px;
 }
+.friends {
+    font-weight: bold;
+    background-color: blue;
+}
